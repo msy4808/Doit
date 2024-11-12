@@ -5,6 +5,17 @@ class SolutionPersonalData {
     }
 }
 
+fun main() {
+    val today = "2022.05.19"
+    val terms = arrayOf("A 6", "B 12", "C 3")
+    val privacies = arrayOf("2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C")
+
+
+    val solution = SolutionPersonalData()
+    val result = solution.solution(today, terms, privacies)
+
+    println(result.joinToString(", "))
+}
 
 //문제 설명
 //고객의 약관 동의를 얻어서 수집된 1~n번으로 분류되는 개인정보 n개가 있습니다. 약관 종류는 여러 가지 있으며 각 약관마다 개인정보 보관 유효기간이 정해져 있습니다. 당신은 각 개인정보가 어떤 약관으로 수집됐는지 알고 있습니다. 수집된 개인정보는 유효기간 전까지만 보관 가능하며, 유효기간이 지났다면 반드시 파기해야 합니다.
