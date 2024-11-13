@@ -1,7 +1,36 @@
 class SolutionPersonalData {
     fun solution(today: String, terms: Array<String>, privacies: Array<String>): IntArray {
-        var answer: IntArray = intArrayOf()
-        return answer
+        val termMap = terms.map {
+            val (type, months) = it.split(" ")
+            type to months.toInt()
+        }.toMap()
+
+        val (todayYear, todayMonth, todayDay) = today.split(".").map { it.toInt() }
+        val result = mutableListOf<Int>()
+
+        privacies.forEachIndexed { index, privacy ->
+            val (date, termType) = privacy.split(" ")
+            val (year, month, day) = date.split(".").map { it.toInt() }
+
+            // 약관별 보관 유효기간을 가져와 해당 날짜에 더하기
+            val addedMonths = termMap[termType] ?: 0
+            var expiryYear = year
+            var expiryMonth = month + addedMonths
+            var expiryDay = day - 1 // 보관 마지막 날은 하루 전으로 설정
+
+            // 월수가 12를 넘으면 연도로 변환
+            expiryYear += (expiryMonth - 1) / 12
+            expiryMonth = (expiryMonth - 1) % 12 + 1
+
+            // 파기 날짜가 오늘 날짜 이전인지 비교
+            if (expiryYear < todayYear ||
+                (expiryYear == todayYear && expiryMonth < todayMonth) ||
+                (expiryYear == todayYear && expiryMonth == todayMonth && expiryDay < todayDay)
+            ) {
+                result.add(index + 1)
+            }
+        }
+        return result.toIntArray()
     }
 }
 
