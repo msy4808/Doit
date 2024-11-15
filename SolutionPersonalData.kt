@@ -1,32 +1,29 @@
 class SolutionPersonalData {
     fun solution(today: String, terms: Array<String>, privacies: Array<String>): IntArray {
+        // 유효기간을 약관별로 매핑
         val termMap = terms.map {
             val (type, months) = it.split(" ")
-            type to months.toInt()
+            type to months.toInt() * 28 // 월수 * 28일로 일수 계산
         }.toMap()
 
+        // 오늘 날짜를 일수로 변환
         val (todayYear, todayMonth, todayDay) = today.split(".").map { it.toInt() }
+        val todayDays = todayYear * 12 * 28 + (todayMonth - 1) * 28 + todayDay
+
         val result = mutableListOf<Int>()
 
         privacies.forEachIndexed { index, privacy ->
             val (date, termType) = privacy.split(" ")
             val (year, month, day) = date.split(".").map { it.toInt() }
 
-            // 약관별 보관 유효기간을 가져와 해당 날짜에 더하기
-            val addedMonths = termMap[termType] ?: 0
-            var expiryYear = year
-            var expiryMonth = month + addedMonths
-            var expiryDay = day - 1 // 보관 마지막 날은 하루 전으로 설정
+            // 수집 날짜를 일수로 변환
+            val collectedDays = year * 12 * 28 + (month - 1) * 28 + day
 
-            // 월수가 12를 넘으면 연도로 변환
-            expiryYear += (expiryMonth - 1) / 12
-            expiryMonth = (expiryMonth - 1) % 12 + 1
+            // 만료 날짜 계산
+            val expiryDays = collectedDays + (termMap[termType] ?: 0)
 
-            // 파기 날짜가 오늘 날짜 이전인지 비교
-            if (expiryYear < todayYear ||
-                (expiryYear == todayYear && expiryMonth < todayMonth) ||
-                (expiryYear == todayYear && expiryMonth == todayMonth && expiryDay < todayDay)
-            ) {
+            // 오늘 날짜와 비교하여 만료된 경우 결과에 추가
+            if (expiryDays <= todayDays) {
                 result.add(index + 1)
             }
         }
